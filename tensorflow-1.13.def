@@ -1,0 +1,27 @@
+Bootstrap: docker
+From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
+
+%post
+  pip install opencv-python
+  apt update && apt install -y libsm6 libxext6 libxrender-dev
+
+  pip install imshowtools imageio imutils
+  pip install sklearn scikit-image
+  pip install jupyter_contrib_nbextensions
+  pip install keras
+
+%labels
+  Author saravanabalagi@hotmail.com
+  Version v0.1
+
+%help
+  This is a tensorflow-gpu 1.13.1 jupyter container forked from docker://tensorflow/tensorflow:1.13.1-gpu-py3-jupyter.
+  Further it comes installed with the following primary pip packages:
+    opencv-python
+    imshowtools
+    imageio
+    imutils
+    sklearn
+    scikit-image
+    jupyter_contrib_nbextensions
+    keras
