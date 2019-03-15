@@ -23,7 +23,13 @@ sudo singularity build tensorflow-1.13.sif tensorflow-1.13.def
 To run `jupyter notebook`:
 
 ```
-singularity exec --bind /home/username/.jupyter/tmp:/run/user --bind /home/username/project_folder:/jupyter --nv tensorflow-1.13.sif jupyter notebook --notebook-dir=/jupyter --no-browser
+singularity exec --bind /home/username/.jupyter/tmp:/run/user \
+                 --bind /home/username/project_folder:/jupyter \
+                 --nv \
+                 tensorflow-1.13.sif \
+                 jupyter notebook \
+                 --notebook-dir=/jupyter \
+                 --no-browser
 ```
 
 To run the shell:
