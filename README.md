@@ -75,9 +75,9 @@ singularity shell --nv tensorflow-1.13.sif
 
 ## Notes
 
-`--nv` flag binds native Nvidia libraries to the container and without this flag you will not be able to access the GPUs from inside the container.
+- `--nv` flag binds native Nvidia libraries to the container and without this flag you will not be able to access the GPUs from inside the container.
 
-`Jupyter` app will create a temporary folder at `~/.jupyter/tmp` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. We decided not to write in `/tmp` folder as this will lead to writing to `/tmp` folder (if container is launched without `--contain` flag) where other users can read leaking user specific and sensitive information.
+- `Jupyter` app will create a temporary folder at `~/.jupyter/tmp` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. `/tmp` folder is bound for `jupyter` to write temporary info into, as this will lead to writing to host's `/tmp` folder (if container is launched without `--contain` flag) where other users can read resulting in leaking user specific and sensitive information.
 
 ## Licence
 
