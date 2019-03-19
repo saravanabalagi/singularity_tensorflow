@@ -11,11 +11,15 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   pip install keras
 
 %labels
-  Author saravanabalagi@hotmail.com
+  Author Saravanabalagi Ramachandran
+  Email saravanabalagi@hotmail.com
+  Repo https://github.com/saravanabalagi/singularity_tensorflow
   Version v0.1
 
 %help
+
   This is a tensorflow-gpu 1.13.1 jupyter container forked from docker://tensorflow/tensorflow:1.13.1-gpu-py3-jupyter.
+
   Further it comes installed with the following primary pip packages:
     opencv-python
     imshowtools
@@ -25,3 +29,44 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
     scikit-image
     jupyter_contrib_nbextensions
     keras
+
+  For more info, visit https://github.com/saravanabalagi/singularity_tensorflow
+
+##############################
+# jupyter app start
+##############################
+
+%appenv jupyter
+  XDG_RUNTIME_DIR=~/.jupyter/tmp
+  export XDG_RUNTIME_DIR
+
+%apphelp jupyter
+
+  =================
+  Jupyter App help
+  =================
+  This app servers Jupyter Notebook at `/jupyter`
+
+  You will have to manually bind your notebook folder at `/jupyter` using
+    `--bind /your/files/location:/jupyter`
+
+  Example:
+    `singularity run --nv --bind ~/Projects/Python/pspnet:/jupyter --app jupyter tensorflow-1.13.sif`
+
+  =============
+  More Info:
+  =============
+  This app will create a temporary folder in your host machine at
+    `~/.jupyter/tmp`
+
+  To bind additional folders for convenience, for example.
+    `--bind /your/dataset/location:/data`
+
+  Remember to bind Nvidia libs using `--nv` when you run the app to utilize the GPU.
+
+%apprun jupyter
+  jupyter notebook --notebook-dir=/jupyter --no-browser
+
+##############################
+# jupyter app end
+##############################

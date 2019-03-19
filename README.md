@@ -14,15 +14,39 @@ The containers are set to contain the following primary pip packages for develop
 
 To build containers from the definition files:
 
-```
+```sh
 sudo singularity build tensorflow-1.13.sif tensorflow-1.13.def
 ```
 
 ## Usage
 
-To run `jupyter notebook`:
-
+To see all the apps
+```sh
+singularity apps tensorflow-1.13.sif
 ```
+
+To access help section of a particular app
+
+```sh
+singularity run-help --app jupyter tensorflow-1.13.sif
+```
+
+### Jupyter App
+
+```sh
+singularity run --nv --bind /your/project:/jupyter --app jupyter tensorflow-1.13.sif
+```
+
+To bind additional folders for convenience, for example, to bind datasets to `/data`
+```sh
+--bind /your/dataset/location:/data
+```
+
+This app will create a temporary folder at `~/.jupyter/tmp` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. We decided not to write in /tmp folder as this will lead to writing to /tmp folder (if container is launched without --contain flag) where other users can read leaking user specific and sensitive information.
+
+To run `jupyter notebook` the old-school way:
+
+```sh
 singularity exec --bind /home/username/.jupyter/tmp:/run/user \
                  --bind /home/username/project_folder:/jupyter \
                  --nv \
@@ -32,9 +56,11 @@ singularity exec --bind /home/username/.jupyter/tmp:/run/user \
                  --no-browser
 ```
 
-To run the shell:
+### Running Shell
 
-```
+To run the shell
+
+```sh
 singularity shell --nv tensorflow-1.13.sif
 ```
 
