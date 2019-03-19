@@ -33,16 +33,17 @@ singularity run-help --app jupyter tensorflow-1.13.sif
 
 ### Jupyter App
 
+To start the jupyter notebook server
+
 ```sh
 singularity run --nv --bind /your/project:/jupyter --app jupyter tensorflow-1.13.sif
 ```
 
-To bind additional folders for convenience, for example, to bind datasets to `/data`
+To bind additional folders for convenience, for example, to bind datasets to `/data`, add another
+
 ```sh
 --bind /your/dataset/location:/data
 ```
-
-This app will create a temporary folder at `~/.jupyter/tmp` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. We decided not to write in /tmp folder as this will lead to writing to /tmp folder (if container is launched without --contain flag) where other users can read leaking user specific and sensitive information.
 
 To run `jupyter notebook` the old-school way:
 
@@ -56,6 +57,14 @@ singularity exec --bind /home/username/.jupyter/tmp:/run/user \
                  --no-browser
 ```
 
+### Python Console
+
+To run an interactive python console
+
+```sh
+singularity exec --nv tensorflow-1.13.sif python
+```
+
 ### Running Shell
 
 To run the shell
@@ -67,6 +76,8 @@ singularity shell --nv tensorflow-1.13.sif
 ## Notes
 
 `--nv` flag binds native Nvidia libraries to the container and without this flag you will not be able to access the GPUs from inside the container.
+
+`Jupyter` app will create a temporary folder at `~/.jupyter/tmp` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. We decided not to write in `/tmp` folder as this will lead to writing to `/tmp` folder (if container is launched without `--contain` flag) where other users can read leaking user specific and sensitive information.
 
 ## Licence
 
