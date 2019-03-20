@@ -20,14 +20,16 @@ sudo singularity build tensorflow-1.13.sif tensorflow-1.13.def
 
 ## Precaution
 
-Before you start, set `CUDA_VISIBLE_DEVICES` to whichever GPU you want to expose to Tensorflow. WARNING: By default, `tensorflow` will try to access the total memory in as many GPUs as possible. With a precaution that this might lead to crashing existing scripts using the GPU, expose only the ones you want to use.
+Before you start, set `CUDA_VISIBLE_DEVICES` to whichever GPU you want to expose to Tensorflow.
+
+WARNING: By default, `tensorflow` will try to access the total memory in as many GPUs as possible. With a precaution that this might lead to crashing existing scripts using the GPU, expose only the ones you want to use.
 
 ```sh
 export CUDA_VISIBLE_DEVICES=0,1
 # will expose only GPUs 0 and 1
 ```
 
-## Jupyter App
+## Running Jupyter App
 
 Launch an instance
 
@@ -45,7 +47,9 @@ singularity instance start --nv \
                             my_instance
 ```
 
-And then run jupyter app on the instance
+Both `--nv` and `--bind` bindings persist in the instance.
+
+Then run jupyter app on the instance
 
 ```sh
 singularity run --app jupyter instance://my_instance
@@ -55,15 +59,23 @@ To stop an instance
 
 ```sh
 singularity instance stop my_instance
-# singularity instance stop -a      <--- To stop all instances
+# singularity instance stop -a                       <--- To stop all instances
 ```
 
-## Python Console
+To check server logs realtime, [shell](#running-shell) into the instance and use `tmux`
+```sh
+tmux ls
+tmux a -t <id>
+# tmux attach -t 0
+```
+
+## Running Python Console
 
 To run an interactive python console
 
 ```sh
-singularity exec --nv tensorflow-1.13.sif python
+singularity exec instance://my_instance python   
+# singularity exec --nv tensorflow-1.13.sif python   <-- To directly run python on the container
 ```
 
 ## Running Shell
@@ -71,14 +83,9 @@ singularity exec --nv tensorflow-1.13.sif python
 To run the shell
 
 ```sh
-singularity shell --nv tensorflow-1.13.sif
+singularity shell instance://my_instance
+# singularity shell --nv tensorflow-1.13.sif          <-- To shell into the container directly
 ```
-
-## Notes
-
-- `--nv` flag binds native Nvidia libraries to the container and without this flag you will not be able to access the GPUs from inside the container.
-
-- `Jupyter` app will create a temporary folder at `~/.jupyter/tmp` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. `/tmp` folder is **not** bound for `jupyter` to write temporary info into, as this will lead to writing to host's `/tmp` folder (if container is launched without `--contain` flag) where other users can read resulting in leaking user specific and sensitive information.
 
 ## Starting services without instances (not recommended)
 
@@ -87,6 +94,7 @@ To start the jupyter notebook server
 ```sh
 singularity run --nv --bind /your/project:/jupyter --app jupyter tensorflow-1.13.sif
 ```
+
 
 To run `jupyter notebook` the old-school way (without the app):
 
@@ -106,6 +114,16 @@ To kill the notebook server, run the shell and
 ps aufx | grep jupyter
 kill <id>
 ```
+
+## Notes
+
+- When starting services without instances (i.e, when working directly on the container), remember to bind `--nv` and other directories via `--bind` every single time you access the container directly. This is however only needed to be done during launching and not required when accessed via instance.
+
+- `--nv` flag binds native Nvidia libraries to the container and without this flag you will not be able to access the GPUs from inside the container.
+
+- `Jupyter` app will create a temporary folder at `~/.jupyter/tmp` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. `/tmp` folder is **not** bound for `jupyter` to write temporary info into, as this will lead to writing to host's `/tmp` folder (if container is launched without `--contain` flag) where other users can read resulting in leaking user specific and sensitive information.
+
+- First few lines of the output immediately after starting the server are shown. This is useful for obtaining the token and to check if the server has successfully started. Logs shall be found in `~/.jupyter/tmp` as `output_<number>.log`, in addition to what's shown inside `tmux`.
 
 ## Licence
 
