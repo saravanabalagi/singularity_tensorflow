@@ -20,15 +20,11 @@ sudo singularity build tensorflow-1.13.sif tensorflow-1.13.def
 
 ## Usage
 
-To see all the apps
-```sh
-singularity apps tensorflow-1.13.sif
-```
-
-To access help section of a particular app
+Before you start, set `CUDA_VISIBLE_DEVICES` to whichever GPU you want to expose to Tensorflow. WARNING: By default, `tensorflow` will try to access the total memory in as many GPUs as possible. With a precaution that this might lead to crashing existing scripts using the GPU, expose only the ones you want to use.
 
 ```sh
-singularity run-help --app jupyter tensorflow-1.13.sif
+export CUDA_VISIBLE_DEVICES=0,1
+# will expose only GPUs 0 and 1
 ```
 
 ### Jupyter App
