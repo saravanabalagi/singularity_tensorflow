@@ -18,7 +18,7 @@ To build containers from the definition files:
 sudo singularity build tensorflow-1.13.sif tensorflow-1.13.def
 ```
 
-## Usage
+## Precaution
 
 Before you start, set `CUDA_VISIBLE_DEVICES` to whichever GPU you want to expose to Tensorflow. WARNING: By default, `tensorflow` will try to access the total memory in as many GPUs as possible. With a precaution that this might lead to crashing existing scripts using the GPU, expose only the ones you want to use.
 
@@ -27,33 +27,38 @@ export CUDA_VISIBLE_DEVICES=0,1
 # will expose only GPUs 0 and 1
 ```
 
-### Jupyter App
+## Jupyter App
 
-To start the jupyter notebook server
+Launch an instance
 
 ```sh
-singularity run --nv --bind /your/project:/jupyter --app jupyter tensorflow-1.13.sif
+singularity instance start --nv --bind /your/project:/jupyter tensorflow-1.13.sif my_instance
 ```
 
 To bind additional folders for convenience, for example, to bind datasets to `/data`, add another
 
 ```sh
---bind /your/dataset/location:/data
+singularity instance start --nv \
+                            --bind /your/project:/jupyter \
+                            --bind /your/dataset/location:/data \
+                            tensorflow-1.13.sif \
+                            my_instance
 ```
 
-To run `jupyter notebook` the old-school way:
+And then run jupyter app on the instance
 
 ```sh
-singularity exec --bind /home/username/.jupyter/tmp:/run/user \
-                 --bind /home/username/project_folder:/jupyter \
-                 --nv \
-                 tensorflow-1.13.sif \
-                 jupyter notebook \
-                 --notebook-dir=/jupyter \
-                 --no-browser
+singularity run --app jupyter instance://my_instance
 ```
 
-### Python Console
+To stop an instance
+
+```sh
+singularity instance stop my_instance
+# singularity instance stop -a      <--- To stop all instances
+```
+
+## Python Console
 
 To run an interactive python console
 
@@ -61,7 +66,7 @@ To run an interactive python console
 singularity exec --nv tensorflow-1.13.sif python
 ```
 
-### Running Shell
+## Running Shell
 
 To run the shell
 
@@ -74,6 +79,33 @@ singularity shell --nv tensorflow-1.13.sif
 - `--nv` flag binds native Nvidia libraries to the container and without this flag you will not be able to access the GPUs from inside the container.
 
 - `Jupyter` app will create a temporary folder at `~/.jupyter/tmp` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. `/tmp` folder is **not** bound for `jupyter` to write temporary info into, as this will lead to writing to host's `/tmp` folder (if container is launched without `--contain` flag) where other users can read resulting in leaking user specific and sensitive information.
+
+## Starting services without instances (not recommended)
+
+To start the jupyter notebook server
+
+```sh
+singularity run --nv --bind /your/project:/jupyter --app jupyter tensorflow-1.13.sif
+```
+
+To run `jupyter notebook` the old-school way (without the app):
+
+```sh
+singularity exec --bind /home/username/.jupyter/tmp:/run/user \
+                 --bind /home/username/project_folder:/jupyter \
+                 --nv \
+                 tensorflow-1.13.sif \
+                 jupyter notebook \
+                 --notebook-dir=/jupyter \
+                 --no-browser
+```
+
+To kill the notebook server, run the shell and
+
+```sh
+ps aufx | grep jupyter
+kill <id>
+```
 
 ## Licence
 
