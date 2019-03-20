@@ -89,6 +89,10 @@ singularity shell instance://my_instance
 
 ## Starting services without instances (not recommended)
 
+WARNING: If you were to do something like this from within a container you would also see the service start, and the web server running. But then if you were to exit the container, the process would continue to run within an unreachable mount namespace. The process would still be running, but you couldn’t easily kill or interface with it. This is a called an orphan process. Singularity instances give you the ability to handle services properly. More on this [here](https://www.sylabs.io/guides/3.0/user-guide/running_services.html).
+
+However, for whatever reason, if you would want to directly run things in the container, follow the steps below:
+
 To start the jupyter notebook server
 
 ```sh
@@ -114,6 +118,7 @@ To kill the notebook server, run the shell and
 ps aufx | grep jupyter
 kill <id>
 ```
+
 
 ## Notes
 
