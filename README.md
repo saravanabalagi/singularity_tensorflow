@@ -28,6 +28,7 @@ WARNING: By default, `tensorflow` will try to access the total memory in as many
 export CUDA_VISIBLE_DEVICES=0,1
 # will expose only GPUs 0 and 1
 ```
+TIP: If you want to automate this process specifying only number of GPUs and minimum memory, you can use simple scripts like [mask-gpu](https://pypi.org/project/mask-gpu/)
 
 ## Running Jupyter App
 
