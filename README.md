@@ -129,7 +129,7 @@ kill <id>
 
 - `Jupyter` app will create a temporary folder at `~/.jupyter/tmp` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. `/tmp` folder is **not** bound for `jupyter` to write temporary info into, as this will lead to writing to host's `/tmp` folder (if container is launched without `--contain` flag) where other users can read resulting in leaking user specific and sensitive information.
 
-- First few lines of the output immediately after starting the server are shown. This is useful for obtaining the token and to check if the server has successfully started. Logs shall be found in `~/.jupyter/tmp` as `output_<number>.log`, in addition to what's shown inside `tmux`.
+- First few lines of the output immediately after starting the server are shown. This is useful for obtaining the token and to check if the server has successfully started. Logs shall be found in `~/.jupyter/tmp` as `output_<yymmdd_HHMMSS>.log`, in addition to what's shown inside `tmux`.
 
 ## Licence
 

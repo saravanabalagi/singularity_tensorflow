@@ -77,12 +77,13 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
 
 %apprun jupyter
   # Build the command to run
-  count=$(tmux ls 2>/dev/null | wc -l)
-  filename="$XDG_RUNTIME_DIR/output_$count.log"
+  datetime=$(date +'%Y%m%d_%H%M%S')
+  filename="$XDG_RUNTIME_DIR/output_$datetime.log"
   tmuxCommand="jupyter notebook --notebook-dir=/jupyter --no-browser |& tee $filename"
 
   # Pass the command to tmux as a string
   # WARNING! Local/Env variables become null inside tmux
+  # DONT remove the double quotes after -d in tmux command
   echo 'Starting Jupyter Notebook Server...'
   tmux new -d "$tmuxCommand"
   echo 'Please wait!'
