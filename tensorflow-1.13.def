@@ -86,16 +86,27 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   # DONT remove the double quotes after -d in tmux command
   echo 'Starting Jupyter Notebook Server...'
   tmux new -d "$tmuxCommand"
-  echo 'Please wait!'
 
-  # Wait for the server to start
-  # And print lines
-  sleep 3; cat $filename
+  echo 'Waiting for the logfile to be created...'
+  while [ ! -f $filename ]; do
+    sleep 1;
+  done
+  printf "Log file has been created at\n  $filename"
 
   # Show additional details
   printf "\n\n==================================================\n"
-  echo If the link was not printed, please run notebook_list.sh
-  echo For more information, see $filename
+  echo 'If the link is not printed, please run notebook_list.sh'
+  echo 'For more information, see the logfile'
+  printf "==================================================\n\n"
+
+  # Wait for the server to start
+  # And print lines when logfile contains more than 5 lines
+  echo "Printing first few lines of the logfile"
+  printf "==================================================\n\n"
+  while [ $(cat $filename | wc -l) -le 5 ]; do
+    sleep 1;
+  done
+  sleep 1; cat $filename
   printf "==================================================\n\n"
 
 ##############################
