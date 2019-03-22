@@ -76,6 +76,15 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   Remember to bind Nvidia libs using `--nv` when you run the app to utilize the GPU.
 
 %apprun jupyter
+
+  # First things first
+  # Set $CUDA_VISIBLE_DEVICES
+  # Temporary hack, to be set in SLURM
+  CUDA_VISIBLE_DEVICES="$@"
+  export CUDA_VISIBLE_DEVICES
+  echo 'Setting CUDA_VISIBLE_DEVICES...'
+  echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+
   # Build the command to run
   datetime=$(date +'%Y%m%d_%H%M%S')
   filename="$XDG_RUNTIME_DIR/output_$datetime.log"
@@ -95,12 +104,14 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
 
   # Show additional details
   printf "\n\n==================================================\n"
-  echo 'If the link is not printed, please run notebook_list.sh'
+  echo 'If the notebook link is not printed below,'
+  echo 'please run notebook_list.sh to get all jupyter sessions'
   echo 'For more information, see the logfile'
   printf "==================================================\n\n"
 
   # Wait for the server to start
   # And print lines when logfile contains more than 5 lines
+  printf "\n==================================================\n"
   echo "Printing first few lines of the logfile"
   printf "==================================================\n\n"
   while [ $(cat $filename | wc -l) -le 5 ]; do

@@ -56,6 +56,14 @@ Then run jupyter app on the instance
 singularity run --app jupyter instance://my_instance
 ```
 
+If you are serving from a remote machine, then do port forwarding in your local machine,
+```sh
+ssh -NfL localhost:8000:localhost:8888 remote-machine.ip.address
+#                     |           |
+#   [desired local port]          [remote port where server is running]
+```
+and get the client running at `localhost:8000` in your local machine.
+
 To stop an instance
 
 ```sh
