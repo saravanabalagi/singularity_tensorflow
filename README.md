@@ -20,15 +20,15 @@ sudo singularity build tensorflow-1.13.sif tensorflow-1.13.def
 
 ## Precaution
 
-Before you start, set `CUDA_VISIBLE_DEVICES` to whichever GPU you want to expose to Tensorflow.
-
 WARNING: By default, `tensorflow` will try to access the total memory in as many GPUs as possible. With a precaution that this might lead to crashing existing scripts using the GPU, expose only the ones you want to use.
+
+With the warning in mind, allot GPUs that can be used using a workload/resource manager like [SLURM](https://slurm.schedmd.com/documentation.html). 
 
 ```sh
 export CUDA_VISIBLE_DEVICES=0,1
 # will expose only GPUs 0 and 1
 ```
-TIP: If you want to automate this process specifying only number of GPUs and minimum memory, you can use a simple script or use apps like [mask-gpu](https://pypi.org/project/mask-gpu/)
+TIP: If you do not use any managers, please set `CUDA_VISIBLE_DEVICES` to whichever GPU you want to expose to Tensorflow. If you want to automate this process specifying only number of GPUs and minimum memory, you can use a simple script or use apps like [mask-gpu](https://pypi.org/project/mask-gpu/)
 
 ## Running Jupyter App
 
