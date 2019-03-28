@@ -22,7 +22,7 @@ sudo singularity build tensorflow-1.13.sif tensorflow-1.13.def
 
 WARNING: By default, `tensorflow` will try to access the total memory in as many GPUs as possible. With a precaution that this might lead to crashing existing scripts using the GPU, expose only the ones you want to use.
 
-With the warning in mind, allot GPUs that can be used using a workload/resource manager like [SLURM](https://slurm.schedmd.com/documentation.html). 
+With the warning in mind, allot GPUs that can be used using a resource scheduler like [SLURM](https://slurm.schedmd.com/gres.html). 
 
 ```sh
 export CUDA_VISIBLE_DEVICES=0,1
