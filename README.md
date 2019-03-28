@@ -24,11 +24,13 @@ WARNING: By default, `tensorflow` will try to access the total memory in as many
 
 With the warning in mind, allot GPUs that can be used using a resource scheduler like [SLURM](https://slurm.schedmd.com/gres.html). 
 
+TIP: If you do not use any managers, please set `CUDA_VISIBLE_DEVICES` to whichever GPU you want to expose to Tensorflow.
+
 ```sh
 export CUDA_VISIBLE_DEVICES=0,1
 # will expose only GPUs 0 and 1
 ```
-TIP: If you do not use any managers, please set `CUDA_VISIBLE_DEVICES` to whichever GPU you want to expose to Tensorflow. If you want to automate this process specifying only number of GPUs and minimum memory, you can use a simple script or use apps like [mask-gpu](https://pypi.org/project/mask-gpu/)
+If you want to automate this process specifying only number of GPUs and minimum memory, you can use a simple script or use apps like [mask-gpu](https://pypi.org/project/mask-gpu/)
 
 ## Running Jupyter App
 
