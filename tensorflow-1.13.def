@@ -15,6 +15,7 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   pip install sklearn scikit-image
   pip install jupyter_contrib_nbextensions
   pip install keras
+  pip install pydot
 
   # handy tool to expose only
   # certain number of GPUs
