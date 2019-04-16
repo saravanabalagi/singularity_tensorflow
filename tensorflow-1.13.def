@@ -7,8 +7,11 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   export CONTAINER_RUNTIME_DIR XDG_RUNTIME_DIR
 
 %post
+  # reset sources to https://us.archive.ubuntu.com
+  sed -i 's/http:\/\/archive.ubuntu.com/http:\/\/us.archive.ubuntu.com/' /etc/apt/sources.list
+
   # sessions and windows in shell
-  apt install -y tmux
+  apt update && apt install -y tmux
 
   # with only pip install,
   # opencv will fail on import unable to link libs
@@ -22,6 +25,8 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
 
   # keras and visualization tools
   pip install keras
+  apt update && apt install -y graphviz
+  pip install pydot graphviz
 
   # handy tool to expose only
   # certain number of GPUs
