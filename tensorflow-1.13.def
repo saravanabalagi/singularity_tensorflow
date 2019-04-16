@@ -26,7 +26,7 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   # keras and visualization tools
   pip install keras
   apt update && apt install -y graphviz
-  pip install pydot graphviz
+  pip install pydot
 
   # handy tool to expose only
   # certain number of GPUs
