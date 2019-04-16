@@ -135,9 +135,11 @@ kill <id>
 
 - `--nv` flag binds native Nvidia libraries to the container and without this flag you will not be able to access the GPUs from inside the container.
 
-- `Jupyter` app will create a temporary folder at `~/.jupyter/tmp` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. `/tmp` folder is **not** bound for `jupyter` to write temporary info into, as this will lead to writing to host's `/tmp` folder (if container is launched without `--contain` flag) where other users can read resulting in leaking user specific and sensitive information.
+- `Jupyter` app will create a temporary folder at `~/.container/jupyter` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. `/tmp` folder is **not** bound for `jupyter` to write temporary info into, as this will lead to writing to host's `/tmp` folder (if container is launched without `--contain` flag) where other users can read resulting in leaking user specific and sensitive information.
 
-- First few lines of the output immediately after starting the server are shown. This is useful for obtaining the token and to check if the server has successfully started. Logs shall be found in `~/.jupyter/tmp` as `output_<yymmdd_HHMMSS>.log`, in addition to what's shown inside `tmux`.
+- First few lines of the output immediately after starting the server are shown. This is useful for obtaining the token and to check if the server has successfully started. Logs shall be found in `~/.container/jupyter` as `output_<yymmdd_HHMMSS>.log`, in addition to what's shown inside `tmux`.
+
+- `CONTAINER_RUNTIME_DIR` variable points to where the container puts in all the temporary files which is `~/.container`. This can be used anywhere from inside the container.
 
 ## Licence
 

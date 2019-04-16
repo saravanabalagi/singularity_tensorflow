@@ -1,6 +1,11 @@
 Bootstrap: docker
 From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
 
+%environment
+  CONTAINER_RUNTIME_DIR=~/.container
+  XDG_RUNTIME_DIR=$CONTAINER_RUNTIME_DIR
+  export CONTAINER_RUNTIME_DIR XDG_RUNTIME_DIR
+
 %post
   # sessions and windows in shell
   apt install -y tmux
@@ -14,7 +19,10 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   pip install imshowtools imageio imutils
   pip install sklearn scikit-image
   pip install jupyter_contrib_nbextensions
+
+  # keras and visualization tools
   pip install keras
+  pip install pydot graphviz
 
   # handy tool to expose only
   # certain number of GPUs
@@ -47,10 +55,6 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
 # jupyter app start
 ##############################
 
-%appenv jupyter
-  XDG_RUNTIME_DIR=~/.jupyter/tmp
-  export XDG_RUNTIME_DIR
-
 %apphelp jupyter
 
   =================
@@ -68,7 +72,7 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   More Info:
   =============
   This app will create a temporary folder in your host machine at
-    `~/.jupyter/tmp`
+    `~/.container/jupyter`
 
   To bind additional folders for convenience, for example.
     `--bind /your/dataset/location:/data`
@@ -96,11 +100,11 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   echo 'Starting Jupyter Notebook Server...'
   tmux new -d "$tmuxCommand"
 
-  echo 'Waiting for the logfile to be created...'
+  printf "Waiting for the logfile to be created at\n  $filename\n"
   while [ ! -f $filename ]; do
     sleep 1;
   done
-  printf "Log file has been created at\n  $filename"
+  printf "Log file has been created :)"
 
   # Show additional details
   printf "\n\n==================================================\n"
