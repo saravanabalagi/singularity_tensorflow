@@ -22,7 +22,6 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
 
   # keras and visualization tools
   pip install keras
-  pip install pydot graphviz
 
   # handy tool to expose only
   # certain number of GPUs
