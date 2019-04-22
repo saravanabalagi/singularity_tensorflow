@@ -21,7 +21,11 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   # install other pip packages
   pip install imshowtools imageio imutils
   pip install sklearn scikit-image
+  pip install tqdm
+
+  # additional notebook packages
   pip install jupyter_contrib_nbextensions
+  pip install jupyterlab
 
   # keras and visualization tools
   pip install keras
@@ -96,12 +100,13 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   # Build the command to run
   datetime=$(date +'%Y%m%d_%H%M%S')
   filename="$XDG_RUNTIME_DIR/output_$datetime.log"
-  tmuxCommand="jupyter notebook --notebook-dir=/jupyter --no-browser |& tee $filename"
+  tmuxCommand="jupyter lab --notebook-dir=/jupyter --no-browser |& tee $filename"
 
   # Pass the command to tmux as a string
   # WARNING! Local/Env variables become null inside tmux
   # DONT remove the double quotes after -d in tmux command
   echo 'Starting Jupyter Notebook Server...'
+  mkdir -p $XDG_RUNTIME_DIR
   tmux new -d "$tmuxCommand"
 
   printf "Waiting for the logfile to be created at\n  $filename\n"
