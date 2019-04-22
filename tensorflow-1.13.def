@@ -10,6 +10,18 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   # reset sources to https://us.archive.ubuntu.com
   sed -i 's/http:\/\/archive.ubuntu.com/http:\/\/us.archive.ubuntu.com/' /etc/apt/sources.list
 
+  # install node
+  curl -sL https://deb.nodesource.com/setup_11.x  | bash -
+  apt-get -y install nodejs
+ 
+  # install yarn
+  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+  apt update && apt install -y yarn
+  yarn --version
+  node --version
+  npm --version
+
   # sessions and windows in shell
   apt update && apt install -y tmux
 
@@ -26,6 +38,12 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   # additional notebook packages
   pip install jupyter_contrib_nbextensions
   pip install jupyterlab
+
+  # jupyterlab extensions
+  jupyter labextension install @jupyterlab/toc
+  jupyter labextension install @krassowski/jupyterlab_go_to_definition
+  jupyter labextension install jupyterlab-drawio
+  jupyter labextension install @ryantam626/jupyterlab_sublime
 
   # keras and visualization tools
   pip install keras
