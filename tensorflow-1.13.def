@@ -13,7 +13,7 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   # install node
   curl -sL https://deb.nodesource.com/setup_11.x  | bash -
   apt-get -y install nodejs
- 
+
   # install yarn
   curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
   echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
@@ -31,22 +31,12 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   apt update && apt install -y libsm6 libxext6 libxrender-dev
 
   # install other pip packages
+  pip install keras pandas
   pip install imshowtools imageio imutils
   pip install sklearn scikit-image
   pip install tqdm
 
-  # additional notebook packages
-  pip install jupyter_contrib_nbextensions
-  pip install jupyterlab
-
-  # jupyterlab extensions
-  jupyter labextension install @jupyterlab/toc
-  jupyter labextension install @krassowski/jupyterlab_go_to_definition
-  jupyter labextension install jupyterlab-drawio
-  jupyter labextension install @ryantam626/jupyterlab_sublime
-
-  # keras and visualization tools
-  pip install keras
+  # visualization tools
   apt update && apt install -y graphviz
   pip install pydot
 
@@ -54,6 +44,25 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   # certain number of GPUs
   # via $CUDA_VISIBLE_DEVICES
   pip install mask-gpu
+
+  # additional notebook extensions
+  pip install jupyter_contrib_nbextensions
+
+  # jupyterlab and other pip dependencies
+  pip install jupyterlab
+  pip install jupyterlab-quickopen
+  pip install jupyterlab-git
+  pip install jupyter-tensorboard
+
+  # jupyterlab extensions
+  jupyter labextension install @jupyterlab/toc
+  jupyter labextension install @krassowski/jupyterlab_go_to_definition
+  jupyter labextension install jupyterlab-drawio
+  jupyter labextension install @ryantam626/jupyterlab_sublime
+  jupyter labextension install jupyterlab_tensorboard
+  jupyter labextension install @parente/jupyterlab-quickopen
+  jupyter labextension install @lckr/jupyterlab_variableinspector
+  jupyter labextension install @jupyterlab/git
 
 %labels
   Author Saravanabalagi Ramachandran
@@ -63,7 +72,10 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
 
 %help
 
-  This is a tensorflow-gpu 1.13.1 jupyter container forked from docker://tensorflow/tensorflow:1.13.1-gpu-py3-jupyter.
+  This is a tensorflow-gpu 1.13.1 jupyter container forked from docker://tensorflow/tensorflow:1.13.1-gpu-py3-jupyter and it contains
+    tensorflow 1.13.1
+    jupyter notebook + extensions
+    jupyterlab + extensions
 
   Further it comes installed with the following primary pip packages:
     opencv-python
@@ -72,8 +84,10 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
     imutils
     sklearn
     scikit-image
-    jupyter_contrib_nbextensions
     keras
+    pandas
+    tqdm
+    graphviz + pydot
 
   For more info, visit https://github.com/saravanabalagi/singularity_tensorflow
 
