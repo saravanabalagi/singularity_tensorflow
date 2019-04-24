@@ -1,14 +1,22 @@
 # Singularity Tensorflow
 This library provides various tensorflow containers forked from docker://tensorflow/tensorflow for development purposes.
 The containers are set to contain the following primary pip packages for development:
+
+- tensorflow 1.13.1
+- jupyter notebook + extensions
+- jupyterlab + extensions
+
+Further it comes installed with the following primary pip packages:
 - opencv-python
 - imshowtools
 - imageio
 - imutils
 - sklearn
 - scikit-image
-- jupyter_contrib_nbextensions
 - keras
+- pandas
+- tqdm
+- graphviz + pydot
 
 ## Building Containers
 
