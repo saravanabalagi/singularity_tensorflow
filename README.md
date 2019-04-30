@@ -42,7 +42,7 @@ If you want to automate this process specifying only number of GPUs and minimum 
 
 ## Running Jupyter App
 
-Update: JupyterLab is now set to run by default when Jupyter app is launched
+![What's new?](https://img.shields.io/badge/-new-blueviolet.svg) JupyterLab is now set to run by default when Jupyter app is launched
 
 Launch an instance
 
