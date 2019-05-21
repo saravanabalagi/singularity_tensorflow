@@ -22,6 +22,9 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   node --version
   npm --version
 
+  # install git
+  apt install -y git
+
   # sessions and windows in shell
   apt update && apt install -y tmux
 
