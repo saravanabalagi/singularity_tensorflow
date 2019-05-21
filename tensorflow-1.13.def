@@ -35,6 +35,8 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   pip install imshowtools imageio imutils
   pip install sklearn scikit-image
   pip install tqdm
+  pip install sorcery
+  pip install pytest
 
   # visualization tools
   apt update && apt install -y graphviz
