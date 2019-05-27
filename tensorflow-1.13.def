@@ -44,6 +44,7 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   # visualization tools
   apt update && apt install -y graphviz
   pip install pydot
+  pip install seaborn
 
   # handy tool to expose only
   # certain number of GPUs
@@ -55,19 +56,22 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
 
   # jupyterlab and other pip dependencies
   pip install jupyterlab
-  pip install jupyterlab-quickopen
-  pip install jupyterlab-git
-  pip install jupyter-tensorboard
 
   # jupyterlab extensions
+  jupyter labextension install @jupyter-widgets/jupyterlab-manager
   jupyter labextension install @jupyterlab/toc
   jupyter labextension install @krassowski/jupyterlab_go_to_definition
   jupyter labextension install jupyterlab-drawio
   jupyter labextension install @ryantam626/jupyterlab_sublime
-  jupyter labextension install jupyterlab_tensorboard
-  jupyter labextension install @parente/jupyterlab-quickopen
   jupyter labextension install @lckr/jupyterlab_variableinspector
-  jupyter labextension install @jupyterlab/git
+
+  # disabled/not working extensions
+  # pip install jupyterlab-git
+  # pip install jupyter-tensorboard
+  # pip install jupyterlab-quickopen
+  # jupyter labextension install @parente/jupyterlab-quickopen
+  # jupyter labextension install jupyterlab_tensorboard
+  # jupyter labextension install @jupyterlab/git
 
 %labels
   Author Saravanabalagi Ramachandran
