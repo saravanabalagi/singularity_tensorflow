@@ -68,6 +68,12 @@ Then run jupyter app on the instance
 singularity run --app jupyter instance://my_instance
 ```
 
+![What's new?](https://img.shields.io/badge/-new-blueviolet.svg) Specify GPUs: Run app jupyter with GPUs to use
+
+```sh
+singularity run --app jupyter instance://my_instance 0,1,2
+```
+
 If you are serving from a remote machine, then do port forwarding in your local machine,
 ```sh
 ssh -NfL localhost:8000:localhost:8888 remote-machine.ip.address
