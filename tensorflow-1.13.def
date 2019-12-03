@@ -35,11 +35,12 @@ From: tensorflow/tensorflow:1.13.1-gpu-py3-jupyter
   apt update && apt install -y libsm6 libxext6 libxrender-dev
 
   # install other pip packages
+  pip install tensorflow_addons
   pip install keras pandas
-  pip install imshowtools imageio imutils
+  pip install imshowtools imaugtools
   pip install sklearn scikit-image
-  pip install tqdm
-  pip install sorcery
+  pip install imageio imutils
+  pip install sorcery munch tqdm
   pip install pytest
 
   # visualization tools
