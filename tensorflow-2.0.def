@@ -1,0 +1,186 @@
+Bootstrap: docker
+From: tensorflow/tensorflow:2.0.0-gpu-py3-jupyter
+
+%environment
+  CONTAINER_RUNTIME_DIR=~/.container
+  XDG_RUNTIME_DIR=$CONTAINER_RUNTIME_DIR
+  export CONTAINER_RUNTIME_DIR XDG_RUNTIME_DIR
+
+%post
+  # reset sources to https://us.archive.ubuntu.com
+  sed -i 's/http:\/\/archive.ubuntu.com/http:\/\/us.archive.ubuntu.com/' /etc/apt/sources.list
+
+  # install node
+  curl -sL https://deb.nodesource.com/setup_11.x  | bash -
+  apt-get -y install nodejs
+
+  # install yarn
+  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+  apt update && apt install -y yarn
+  yarn --version
+  node --version
+  npm --version
+
+  # install git
+  add-apt-repository -y ppa:git-core/ppa
+  apt update && apt install -y git
+
+  # sessions and windows in shell
+  apt update && apt install -y tmux
+
+  # with only pip install,
+  # opencv will fail on import unable to link libs
+  pip install opencv-python
+  apt update && apt install -y libsm6 libxext6 libxrender-dev
+
+  # install other pip packages
+  pip install tensorflow_addons
+  pip install keras pandas
+  pip install imshowtools imaugtools
+  pip install sklearn scikit-image
+  pip install imageio imutils
+  pip install sorcery munch tqdm
+  pip install pytest
+
+  # visualization tools
+  apt update && apt install -y graphviz
+  pip install pydot
+  pip install seaborn
+
+  # handy tool to expose only
+  # certain number of GPUs
+  # via $CUDA_VISIBLE_DEVICES
+  pip install mask-gpu
+
+  # additional notebook extensions
+  pip install jupyter_contrib_nbextensions
+
+  # jupyterlab and other pip dependencies
+  pip install jupyterlab
+  pip install jupyterlab-git
+
+  # jupyterlab extensions
+  jupyter labextension install @jupyter-widgets/jupyterlab-manager
+  jupyter labextension install @jupyterlab/toc
+  jupyter labextension install @krassowski/jupyterlab_go_to_definition
+  jupyter labextension install jupyterlab-drawio
+  jupyter labextension install @ryantam626/jupyterlab_sublime
+  jupyter labextension install @lckr/jupyterlab_variableinspector
+  jupyter labextension install @jupyterlab/git
+
+  # jupyterlab extensions config
+  # Use with Git SSH
+  # Does not work with HTTPS yet
+  jupyter serverextension enable --py jupyterlab_git
+
+  # disabled/not working extensions
+  # pip install jupyter-tensorboard
+  # pip install jupyterlab-quickopen
+  # jupyter labextension install @parente/jupyterlab-quickopen
+  # jupyter labextension install jupyterlab_tensorboard
+
+%labels
+  Author Saravanabalagi Ramachandran
+  Email saravanabalagi@hotmail.com
+  Repo https://github.com/saravanabalagi/singularity_tensorflow
+  Version v0.1
+
+%help
+
+  This is a tensorflow-gpu 2.0.0 jupyter container forked from docker://tensorflow/tensorflow:2.0.0-gpu-py3-jupyter and it contains
+    tensorflow 2.0.0
+    jupyter notebook + extensions
+    jupyterlab + extensions
+
+  Further it comes installed with the following primary pip packages:
+    opencv-python
+    imshowtools
+    imageio
+    imutils
+    sklearn
+    scikit-image
+    keras
+    pandas
+    tqdm
+    graphviz + pydot
+
+  For more info, visit https://github.com/saravanabalagi/singularity_tensorflow
+
+##############################
+# jupyter app start
+##############################
+
+%apphelp jupyter
+
+  =================
+  Jupyter App help
+  =================
+  This app servers Jupyter Notebook at `/jupyter`
+
+  You will have to manually bind your notebook folder at `/jupyter` using
+    `--bind /your/files/location:/jupyter`
+
+  Example:
+    `singularity run --nv --bind ~/Projects/Python/pspnet:/jupyter --app jupyter tensorflow-1.13.sif`
+
+  =============
+  More Info:
+  =============
+  This app will create a temporary folder in your host machine at
+    `~/.container/jupyter`
+
+  To bind additional folders for convenience, for example.
+    `--bind /your/dataset/location:/data`
+
+  Remember to bind Nvidia libs using `--nv` when you run the app to utilize the GPU.
+
+%apprun jupyter
+
+  # First things first
+  # Set $CUDA_VISIBLE_DEVICES
+  # Temporary hack, to be set in SLURM
+  CUDA_VISIBLE_DEVICES="$@"
+  export CUDA_VISIBLE_DEVICES
+  echo 'Setting CUDA_VISIBLE_DEVICES...'
+  echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+
+  # Build the command to run
+  datetime=$(date +'%Y%m%d_%H%M%S')
+  filename="$XDG_RUNTIME_DIR/output_$datetime.log"
+  tmuxCommand="jupyter lab --notebook-dir=/jupyter --no-browser |& tee $filename"
+
+  # Pass the command to tmux as a string
+  # WARNING! Local/Env variables become null inside tmux
+  # DONT remove the double quotes after -d in tmux command
+  echo 'Starting Jupyter Notebook Server...'
+  mkdir -p $XDG_RUNTIME_DIR
+  tmux new -d "/bin/bash -c $tmuxCommand"
+
+  printf "Waiting for the logfile to be created at\n  $filename\n"
+  while [ ! -f $filename ]; do
+    sleep 1;
+  done
+  printf "Log file has been created :)"
+
+  # Show additional details
+  printf "\n\n==================================================\n"
+  echo 'If the notebook link is not printed below,'
+  echo 'please run notebook_list.sh to get all jupyter sessions'
+  echo 'For more information, see the logfile'
+  printf "==================================================\n\n"
+
+  # Wait for the server to start
+  # And print lines when logfile contains more than 5 lines
+  printf "\n==================================================\n"
+  echo "Printing first few lines of the logfile"
+  printf "==================================================\n\n"
+  while [ $(cat $filename | wc -l) -le 5 ]; do
+    sleep 1;
+  done
+  sleep 1; cat $filename
+  printf "==================================================\n\n"
+
+##############################
+# jupyter app end
+##############################
