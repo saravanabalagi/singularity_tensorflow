@@ -1,0 +1,9 @@
+singularity instance start --nv \
+                            --bind ~/Projects/Python:/jupyter \
+                            --bind /data:/data \
+                            tensorflow-2.0.sif \
+                            jupyter
+singularity run --app jupyter instance://jupyter 0,1
+singularity shell instance://jupyter
+singularity instance stop instance://jupyter
+singularity instance stop -a
