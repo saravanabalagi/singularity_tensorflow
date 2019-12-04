@@ -1,30 +1,86 @@
 # Singularity Tensorflow
-This library provides various tensorflow containers forked from docker://tensorflow/tensorflow for development purposes.
-The containers are set to contain the following primary pip packages for development:
-
-- tensorflow 1.13.1
-- jupyter notebook + extensions
-- jupyterlab + extensions
-
-Further it comes installed with the following primary pip packages:
+This library contains definitions for building tensorflow singularity containers bootstrapped from docker://tensorflow/tensorflow for development purposes. The containers also contain essential pip packages for computer vision, deep learning and visualization.
+- tensorflow_addons
 - opencv-python
-- imshowtools
-- imageio
-- imutils
-- sklearn
+- sklearn 
 - scikit-image
-- keras
+- imshowtools 
+- imaugtools
+- imageio 
+- imutils
+- pydot
+- seaborn
 - pandas
+- mask-gpu
+- filenumutils 
+- sampling_utils
+- sorcery 
+- munch 
 - tqdm
-- graphviz + pydot
+- mdprint
+- pytest
 
-## Building Containers
+## Build
 
 To build containers from the definition files:
 
 ```sh
-sudo singularity build tensorflow-1.13.sif tensorflow-1.13.def
+cd src
+sudo singularity build tf2.sif tf2.def                              # tf2 (no notebook or lab)
 ```
+Once `tf2.sif` is built, you can then build with jupyter support using one of the following:
+```
+sudo singularity build jupyter_tf2.sif jupyter.def                  # jupyter (only notebook)
+sudo singularity build jupyter_tf2.sif jupyterlab.def               # jupyterlab (contains both notebook and lab)
+```
+
+## Run
+```
+singularity instance start --nv \
+                            --contain \
+                            --bind ~/Projects/Python:/projects \
+                            --bind /data:/data \
+                            tf2.sif \
+                            tf2
+```
+
+Change the arguments appropriately:
+- `~/Projects/Python`: Directory in the host machine
+- `/projects`: Location inside the container to which the source directory will be mapped
+- `tf2.sif`: Container File
+- `tf2`: Instance Name
+- You can add may `--bind`s to bind more directories on the host to the container.
+
+To stop and unmount a single instance, or to stop and unmount all instances, use
+```
+singularity instance stop instance://tf2
+singularity instance stop -a
+```
+For more details, see [singularity docs](https://sylabs.io/guides/3.0/user-guide/).
+
+## Jupyter Server
+
+#### Mount and Start Server
+ ```
+singularity instance start --nv \
+                            --contain \
+                            --home $HOME \
+                            --bind ~/Projects/Python:/projects \
+                            --bind /data:/data \
+                            jupyter_tf2.sif \
+                            jupyter
+singularity run --app jupyter instance://jupyter 0,1
+```
+This jupyter server will use only GPUs 0 and 1. Change appropriately.
+
+#### Checking running Servers, Tokens and Server Logs
+```
+singularity run --app jupyter_servers instance://jupyter
+singularity run --app jupyter_logs instance://jupyter
+```
+`jupyter_logs` app will take you inside [tmux](https://github.com/tmux/tmux/wiki) (detached screen). 
+- To exit, use <kbd>Ctrl</kbd>+<kbd>B</kbd>, then <kbd>D</kbd>
+- To switch tabs, use <kbd>Ctrl</kbd>+<kbd>B</kbd>, then <kbd>N</kbd>
 
 ## Precaution
 
@@ -40,39 +96,7 @@ export CUDA_VISIBLE_DEVICES=0,1
 ```
 If you want to automate this process specifying only number of GPUs and minimum memory, you can use a simple script or use apps like [mask-gpu](https://pypi.org/project/mask-gpu/)
 
-## Running Jupyter App
-
-![What's new?](https://img.shields.io/badge/-new-blueviolet.svg) JupyterLab is now set to run by default when Jupyter app is launched
-
-Launch an instance
-
-```sh
-singularity instance start --nv --bind /your/project:/jupyter tensorflow-1.13.sif my_instance
-```
-
-To bind additional folders for convenience, for example, to bind datasets to `/data`, add another
-
-```sh
-singularity instance start --nv \
-                            --bind /your/project:/jupyter \
-                            --bind /your/dataset/location:/data \
-                            tensorflow-1.13.sif \
-                            my_instance
-```
-
-Both `--nv` and `--bind` bindings persist in the instance.
-
-Then run jupyter app on the instance
-
-```sh
-singularity run --app jupyter instance://my_instance
-```
-
-![What's new?](https://img.shields.io/badge/-new-blueviolet.svg) Specify GPUs: Run app jupyter with GPUs to use
-
-```sh
-singularity run --app jupyter instance://my_instance 0,1,2
-```
+## Port Forwarding
 
 If you are serving from a remote machine, then do port forwarding in your local machine,
 ```sh
@@ -81,20 +105,6 @@ ssh -NfL localhost:8000:localhost:8888 remote-machine.ip.address
 #   [desired local port]          [remote port where server is running]
 ```
 and get the client running at `localhost:8000` in your local machine.
-
-To stop an instance
-
-```sh
-singularity instance stop my_instance
-# singularity instance stop -a                       <--- To stop all instances
-```
-
-To check server logs realtime, [shell](#running-shell) into the instance and use `tmux`
-```sh
-tmux ls
-tmux a -t <id>
-# tmux attach -t 0
-```
 
 ## Running Python Console
 
