@@ -1,3 +1,7 @@
+sudo singularity build tf2.sif tf2.def
+sudo singularity build jupyter_tf2.sif jupyter.def
+sudo singularity build jupyter_tf2.sif jupyterlab.def
+
 singularity instance start --nv \
                             --contain \
                             --bind ~/Projects/Python:/projects \
