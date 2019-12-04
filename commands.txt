@@ -1,0 +1,22 @@
+singularity instance start --nv \
+                            --contain \
+                            --bind ~/Projects/Python:/projects \
+                            --bind /data:/data \
+                            tf2.sif \
+                            tf2
+singularity instance stop instance://tf2
+singularity instance stop -a
+
+singularity instance start --nv \
+                            --contain \
+                            --home $HOME \
+                            --bind ~/Projects/Python:/projects \
+                            --bind /data:/data \
+                            jupyter_tf2.sif \
+                            jupyter
+singularity run --app jupyter instance://jupyter 0,1
+singularity run --app jupyter_servers instance://jupyter
+singularity run --app jupyter_logs instance://jupyter
+singularity shell instance://jupyter
+singularity instance stop jupyter
+singularity instance stop -a
