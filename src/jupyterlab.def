@@ -1,0 +1,88 @@
+Bootstrap: localimage
+From: tf2.sif
+
+%environment
+  CONTAINER_RUNTIME_DIR=~/.container
+  XDG_RUNTIME_DIR=$CONTAINER_RUNTIME_DIR
+  export CONTAINER_RUNTIME_DIR XDG_RUNTIME_DIR
+
+%post
+  # install Jupyter
+  pip install jupyter
+
+  # additional notebook extensions
+  pip install jupyter_contrib_nbextensions
+
+  # install node
+  curl -sL https://deb.nodesource.com/setup_11.x  | bash -
+  apt-get -y install nodejs
+
+  # install yarn
+  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+  apt update && apt install -y yarn
+  yarn --version
+  node --version
+  npm --version
+
+  # jupyterlab and other pip dependencies
+  pip install jupyterlab
+  pip install jupyterlab-git
+
+  # jupyterlab extensions
+  jupyter labextension install @jupyter-widgets/jupyterlab-manager
+  jupyter labextension install @jupyterlab/toc
+  jupyter labextension install @krassowski/jupyterlab_go_to_definition
+  jupyter labextension install jupyterlab-drawio
+  jupyter labextension install @ryantam626/jupyterlab_sublime
+  jupyter labextension install @lckr/jupyterlab_variableinspector
+  jupyter labextension install @jupyterlab/git
+
+  # jupyterlab extensions config
+  # Use with Git SSH
+  # Does not work with HTTPS yet
+  jupyter serverextension enable --py jupyterlab_git
+
+%apprun jupyter
+
+  # Set $CUDA_VISIBLE_DEVICES
+  CUDA_VISIBLE_DEVICES="$@"
+  printf "Setting CUDA_VISIBLE_DEVICES..."
+  export CUDA_VISIBLE_DEVICES
+  printf "\r\033[KCUDA_VISIBLE_DEVICES successfully set to $CUDA_VISIBLE_DEVICES...\n"
+
+  # Validate if /projects exist
+  projectDir="/projects"
+  if [ ! -d "/projects" ]
+  then
+    projectDir="/"
+  fi
+
+  # Build the command to run
+  tmuxCommand="jupyter lab --notebook-dir=$projectDir --no-browser"
+  printf "Starting Jupyter Lab Server at $projectDir, please wait..."
+
+  # Create a new window in jupyter session (Create new session if one doesn't exist)
+  tmux has-session -t jupyter 2> /dev/null \
+    && tmux new-window -t jupyter -d "$tmuxCommand" \
+    || tmux new -s jupyter -d "$tmuxCommand"
+  sleep 3; printf "\r\033[K"; jupyter notebook list
+
+  printf "To see currently running servers, please run, "
+  printf "singularity run --app jupyter_servers instance://your_instance\n"
+
+  printf "To view logs and activity, please run, "
+  printf "singularity run --app jupyter_log instance://your_instance\n"
+
+%apprun jupyter_servers
+  jupyter notebook list
+
+%apprun jupyter_logs
+  tmux a -t jupyter
+
+%labels
+
+  Author Saravanabalagi Ramachandran
+  Email saravanabalagi@hotmail.com
+  Repo https://github.com/saravanabalagi/singularity_tensorflow
+  Version v0.1

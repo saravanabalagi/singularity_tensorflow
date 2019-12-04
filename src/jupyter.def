@@ -1,0 +1,60 @@
+Bootstrap: localimage
+From: tf2.sif
+
+%environment
+
+  CONTAINER_RUNTIME_DIR=~/.container
+  XDG_RUNTIME_DIR=$CONTAINER_RUNTIME_DIR
+  export CONTAINER_RUNTIME_DIR XDG_RUNTIME_DIR
+
+%post
+
+  # install Jupyter
+  pip install jupyter
+
+  # additional notebook extensions
+  pip install jupyter_contrib_nbextensions
+
+%apprun jupyter
+
+  # Set $CUDA_VISIBLE_DEVICES
+  CUDA_VISIBLE_DEVICES="$@"
+  printf "Setting CUDA_VISIBLE_DEVICES..."
+  export CUDA_VISIBLE_DEVICES
+  printf "\r\033[KCUDA_VISIBLE_DEVICES successfully set to $CUDA_VISIBLE_DEVICES...\n"
+
+  # Validate if /projects exist
+  projectDir="/projects"
+  if [ ! -d "/projects" ]
+  then
+    projectDir="/"
+  fi
+
+  # Build the command to run
+  tmuxCommand="jupyter notebook --notebook-dir=$projectDir --no-browser"
+  printf "Starting Jupyter Notebook Server at $projectDir, please wait..."
+
+  # Create a new window in jupyter session (Create new session if one doesn't exist)
+  tmux has-session -t jupyter 2> /dev/null \
+    && tmux new-window -t jupyter -d "$tmuxCommand" \
+    || tmux new -s jupyter -d "$tmuxCommand"
+  sleep 3; printf "\r\033[K"; jupyter notebook list
+
+  printf "To see currently running servers, please run, "
+  printf "singularity run --app jupyter_servers instance://your_instance\n"
+
+  printf "To view logs and activity, please run, "
+  printf "singularity run --app jupyter_log instance://your_instance\n"
+
+%apprun jupyter_servers
+  jupyter notebook list
+
+%apprun jupyter_logs
+  tmux a -t jupyter
+
+%labels
+
+  Author Saravanabalagi Ramachandran
+  Email saravanabalagi@hotmail.com
+  Repo https://github.com/saravanabalagi/singularity_tensorflow
+  Version v0.1
