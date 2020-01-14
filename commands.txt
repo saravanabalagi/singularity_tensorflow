@@ -2,6 +2,8 @@ sudo singularity build tf2.sif tf2.def
 sudo singularity build jupyter_tf2.sif jupyter.def
 sudo singularity build jupyter_tf2.sif jupyterlab.def
 
+scp your_machine:~/singularity_images/tf2.sif ~/singularity_images/
+
 singularity instance start --nv \
                             --contain \
                             --bind ~/Projects/Python:/projects \
