@@ -1,55 +1,49 @@
 # Singularity Tensorflow
-This library contains definitions for building tensorflow singularity containers bootstrapped from docker://tensorflow/tensorflow for development purposes. The containers also contain essential pip packages for computer vision, deep learning and visualization.
-- tensorflow_addons
-- opencv-python
-- sklearn 
-- scikit-image
-- imshowtools 
-- imaugtools
-- imageio 
-- imutils
-- pydot
-- seaborn
-- pandas
-- mask-gpu
-- filenumutils 
-- sampling_utils
-- sorcery 
-- munch 
-- tqdm
-- mdprint
-- pytest
+This library contains definitions for building tensorflow singularity containers bootstrapped from docker://tensorflow/tensorflow for development purposes. The containers also contain essential pip packages for computer vision, deep learning and visualization. Please refer to the individual def file to see included apt and PyPi packages.
 
 ## Build
 
-To build containers from the definition files:
+Build a singularity image (.sif) from the definition file (.def) on your own machine:
 
 ```sh
 cd src
 sudo singularity build tf2.sif tf2.def                              # tf2 (no notebook or lab)
 ```
+
 Once `tf2.sif` is built, you can then build with jupyter support using one of the following:
 ```
 sudo singularity build jupyter_tf2.sif jupyter.def                  # jupyter (only notebook)
 sudo singularity build jupyter_tf2.sif jupyterlab.def               # jupyterlab (contains both notebook and lab)
 ```
 
-## Run
+## Copy
+
+Copy the singularity image (.sif) to the Server Machine:
+
+```sh
+scp your_machine:~/singularity_images/tf2.sif ~/singularity_images/
+#scp source destination
+```
+
+Note that this requires authentication to your machine, it's strongly recommended to setup ssh key access so you can directly run the above command.
+
+## Launch Instance
 ```
 singularity instance start --nv \
                             --contain \
+                            --home $HOME \
                             --bind ~/Projects/Python:/projects \
                             --bind /data:/data \
-                            tf2.sif \
+                            ~/singularity_images/tf2.sif \
                             tf2
 ```
 
 Change the arguments appropriately:
-- `~/Projects/Python`: Directory in the host machine
-- `/projects`: Location inside the container to which the source directory will be mapped
-- `tf2.sif`: Container File
+- `~/singularity_images/tf2.sif`: Singularity Image file location 
 - `tf2`: Instance Name
+- `--bind directory_in_host:location_inside_container`: The directory `~/Projects/Python` present on the host machine will be mapped to `/projects` inside the singularity image.
 - You can add may `--bind`s to bind more directories on the host to the container.
+- `--home directory_in_host`: Special bind command maps the directory to `~` inside the singularity image.
 
 To stop and unmount a single instance, or to stop and unmount all instances, use
 ```
@@ -58,7 +52,21 @@ singularity instance stop -a
 ```
 For more details, see [singularity docs](https://sylabs.io/guides/3.0/user-guide/).
 
-## Jupyter Server
+## Run Jupyter Server
+
+#### Precaution
+
+WARNING: By default, `tensorflow` will try to access the total memory in as many GPUs as possible. With a precaution that this might lead to crashing existing scripts using the GPU, expose only the ones you want to use.
+
+With the warning in mind, allot GPUs that can be used using a resource scheduler like [SLURM](https://slurm.schedmd.com/gres.html). 
+
+TIP: If you do not use any managers, please set `CUDA_VISIBLE_DEVICES` to whichever GPU you want to expose to Tensorflow.
+
+```sh
+export CUDA_VISIBLE_DEVICES=0,1
+# will expose only GPUs 0 and 1
+```
+If you want to automate this process specifying only number of GPUs and minimum memory, you can use a simple script or use apps like [mask-gpu](https://pypi.org/project/mask-gpu/)
 
 #### Mount and Start Server
  ```
@@ -82,31 +90,18 @@ singularity run --app jupyter_logs instance://jupyter
 - To exit, use <kbd>Ctrl</kbd>+<kbd>B</kbd>, then <kbd>D</kbd>
 - To switch tabs, use <kbd>Ctrl</kbd>+<kbd>B</kbd>, then <kbd>N</kbd>
 
-## Precaution
+#### Port Forwarding
 
-WARNING: By default, `tensorflow` will try to access the total memory in as many GPUs as possible. With a precaution that this might lead to crashing existing scripts using the GPU, expose only the ones you want to use.
+You may want to edit the notebook remotely in your machine. To do so, start the jupyter notebook server using above instructions and run the following command in your machine:
 
-With the warning in mind, allot GPUs that can be used using a resource scheduler like [SLURM](https://slurm.schedmd.com/gres.html). 
-
-TIP: If you do not use any managers, please set `CUDA_VISIBLE_DEVICES` to whichever GPU you want to expose to Tensorflow.
-
-```sh
-export CUDA_VISIBLE_DEVICES=0,1
-# will expose only GPUs 0 and 1
-```
-If you want to automate this process specifying only number of GPUs and minimum memory, you can use a simple script or use apps like [mask-gpu](https://pypi.org/project/mask-gpu/)
-
-## Port Forwarding
-
-If you are serving from a remote machine, then do port forwarding in your local machine,
 ```sh
 ssh -NfL localhost:8000:localhost:8888 remote-machine.ip.address
 #                     |           |
 #   [desired local port]          [remote port where server is running]
 ```
-and get the client running at `localhost:8000` in your local machine.
+Then run `localhost:8000` in a browser on your machine to view/edit the notebooks. This command forwards the port 8000 in your machine to the server's port 8888.
 
-## Running Python Console
+## Run Python Console
 
 To run an interactive python console
 
@@ -115,7 +110,7 @@ singularity exec instance://my_instance python
 # singularity exec --nv tensorflow-1.13.sif python   <-- To directly run python on the container
 ```
 
-## Running Shell
+## Run Shell
 
 To run the shell
 
