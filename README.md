@@ -28,18 +28,22 @@ scp your_machine:~/singularity_images/tf2.sif ~/singularity_images/
 Note that this requires authentication to your machine, it's strongly recommended to setup ssh key access so you can directly run the above command.
 
 ## Launch Instance
+
+SSH into the server and run,
+
 ```
+cd ~/singularity_images
 singularity instance start --nv \
                             --contain \
                             --home $HOME \
                             --bind ~/Projects/Python:/projects \
                             --bind /data:/data \
-                            ~/singularity_images/tf2.sif \
+                            tf2.sif \
                             tf2
 ```
 
 Change the arguments appropriately:
-- `~/singularity_images/tf2.sif`: Singularity Image file location 
+- `tf2.sif`: Singularity Image file location 
 - `tf2`: Instance Name
 - `--bind directory_in_host:location_inside_container`: The directory `~/Projects/Python` present on the host machine will be mapped to `/projects` inside the singularity image.
 - You can add may `--bind`s to bind more directories on the host to the container.
@@ -52,7 +56,12 @@ singularity instance stop -a
 ```
 For more details, see [singularity docs](https://sylabs.io/guides/3.0/user-guide/).
 
-## Run Jupyter Server
+## Run
+
+Make sure have launched an instance and the instance is running before you run anything in that instance in the Server Machine.
+```sh
+singularity instance list
+```
 
 #### Precaution
 
@@ -68,15 +77,53 @@ export CUDA_VISIBLE_DEVICES=0,1
 ```
 If you want to automate this process specifying only number of GPUs and minimum memory, you can use a simple script or use apps like [mask-gpu](https://pypi.org/project/mask-gpu/)
 
+
+### Run Python Console
+
+To run an interactive python console
+
+```sh
+singularity exec instance://my_instance python   
+```
+
+### Run Shell
+
+To run the shell
+
+```sh
+singularity shell instance://my_instance
+```
+
+### Run Scripts
+
+To run a long running script,
+
+```
+singularity shell instance://my_instance                      # Singularity Prompt: Singularity tf2.sif:~> 
+tmux                                                          # Tmux Window: name@server:~$
+export CUDA_VISIBLE_DEVICES=0,1
+python some_folder/some_long_python_script.py
+Ctrl+B Ctrl+D                                                 # Singularity Prompt: Singularity tf2.sif:~> 
+exit                                                          # Server Prompt: name@server:~$
+```
+
+To check progress/output,
+```
+singularity shell instance://my_instance                      # Singularity Prompt: Singularity tf2.sif:~> 
+tmux ls                                                       # Lists all tmux windows
+tmux a -t <window_number>                                     # Tmux Window: name@server:~$
+# do stuff
+# Ctrl+B [ to start scrolling
+# Page-Up/Down, Up/Down/Left/Right to navigate
+# q to exit scrolling mode
+Ctrl+B Ctrl+D                                                 # Singularity Prompt: Singularity tf2.sif:~> 
+exit                                                          # Server Prompt: name@server:~$
+```
+
+### Run Jupyter Server
+
 #### Mount and Start Server
  ```
-singularity instance start --nv \
-                            --contain \
-                            --home $HOME \
-                            --bind ~/Projects/Python:/projects \
-                            --bind /data:/data \
-                            jupyter_tf2.sif \
-                            jupyter
 singularity run --app jupyter instance://jupyter 0,1
 ```
 This jupyter server will use only GPUs 0 and 1. Change appropriately.
@@ -101,29 +148,17 @@ ssh -NfL localhost:8000:localhost:8888 remote-machine.ip.address
 ```
 Then run `localhost:8000` in a browser on your machine to view/edit the notebooks. This command forwards the port 8000 in your machine to the server's port 8888.
 
-## Run Python Console
-
-To run an interactive python console
-
-```sh
-singularity exec instance://my_instance python   
-# singularity exec --nv tensorflow-1.13.sif python   <-- To directly run python on the container
-```
-
-## Run Shell
-
-To run the shell
-
-```sh
-singularity shell instance://my_instance
-# singularity shell --nv tensorflow-1.13.sif          <-- To shell into the container directly
-```
-
 ## Starting services without instances (not recommended)
 
 WARNING: If you were to do something like this from within a container you would also see the service start, and the web server running. But then if you were to exit the container, the process would continue to run within an unreachable mount namespace. The process would still be running, but you couldn’t easily kill or interface with it. This is a called an orphan process. Singularity instances give you the ability to handle services properly. More on this [here](https://www.sylabs.io/guides/3.0/user-guide/running_services.html).
 
-However, for whatever reason, if you would want to directly run things in the container, follow the steps below:
+However, for whatever reason, if you would want to directly run things in the container:
+
+```sh
+singularity shell --nv tf2.sif
+singularity exec --nv tf2.sif python
+singularity exec --nv tf2.sif command_to_execute
+```
 
 To start the jupyter notebook server
 
@@ -159,8 +194,6 @@ kill <id>
 - `--nv` flag binds native Nvidia libraries to the container and without this flag you will not be able to access the GPUs from inside the container.
 
 - `Jupyter` app will create a temporary folder at `~/.container/jupyter` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. `/tmp` folder is **not** bound for `jupyter` to write temporary info into, as this will lead to writing to host's `/tmp` folder (if container is launched without `--contain` flag) where other users can read resulting in leaking user specific and sensitive information.
-
-- First few lines of the output immediately after starting the server are shown. This is useful for obtaining the token and to check if the server has successfully started. Logs shall be found in `~/.container/jupyter` as `output_<yymmdd_HHMMSS>.log`, in addition to what's shown inside `tmux`.
 
 - `CONTAINER_RUNTIME_DIR` variable points to where the container puts in all the temporary files which is `~/.container`. This can be used anywhere from inside the container.
 
