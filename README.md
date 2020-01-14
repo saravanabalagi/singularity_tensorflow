@@ -7,13 +7,13 @@ Build a singularity image (.sif) from the definition file (.def) on your own mac
 
 ```sh
 cd src
-sudo singularity build tf2.sif tf2.def                              # tf2 (no notebook or lab)
+sudo singularity build tf2.sif tf2.def                          # tf2 (no notebook or lab)
 ```
 
 Once `tf2.sif` is built, you can then build with jupyter support using one of the following:
 ```
-sudo singularity build jupyter_tf2.sif jupyter.def                  # jupyter (only notebook)
-sudo singularity build jupyter_tf2.sif jupyterlab.def               # jupyterlab (contains both notebook and lab)
+sudo singularity build jupyter_tf2.sif jupyter.def              # jupyter (only notebook)
+sudo singularity build jupyter_tf2.sif jupyterlab.def           # jupyterlab (contains both notebook and lab)
 ```
 
 ## Copy
@@ -116,7 +116,7 @@ tmux a -t <window_number>                                     # Tmux Window: nam
 # Ctrl+B [ to start scrolling
 # Page-Up/Down, Up/Down/Left/Right to navigate
 # q to exit scrolling mode
-Ctrl+B Ctrl+D                                                 # Singularity Prompt: Singularity tf2.sif:~> 
+Ctrl+B Ctrl+D to exit tmux                                    # Singularity Prompt: Singularity tf2.sif:~> 
 exit                                                          # Server Prompt: name@server:~$
 ```
 
@@ -148,9 +148,9 @@ ssh -NfL localhost:8000:localhost:8888 remote-machine.ip.address
 ```
 Then run `localhost:8000` in a browser on your machine to view/edit the notebooks. This command forwards the port 8000 in your machine to the server's port 8888.
 
-### Kill processes
+### Kill Processes
 
-Similar to killing processes on your own machine, just shell into the instance and kill the process required.
+Similar to killing processes on your own machine, just shell into the instance and kill the desired process.
 
 ```
 singularity shell instance://my_instance    # Singularity Prompt: Singularity tf2.sif:~> 
