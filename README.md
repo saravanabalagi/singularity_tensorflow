@@ -148,6 +148,16 @@ ssh -NfL localhost:8000:localhost:8888 remote-machine.ip.address
 ```
 Then run `localhost:8000` in a browser on your machine to view/edit the notebooks. This command forwards the port 8000 in your machine to the server's port 8888.
 
+### Kill processes
+
+Similar to killing processes on your own machine, just shell into the instance and kill the process required.
+
+```
+singularity shell instance://my_instance    # Singularity Prompt: Singularity tf2.sif:~> 
+ps aufx                                     # Lists all running processes
+kill <PID>
+```
+
 ## Starting services without instances (not recommended)
 
 WARNING: If you were to do something like this from within a container you would also see the service start, and the web server running. But then if you were to exit the container, the process would continue to run within an unreachable mount namespace. The process would still be running, but you couldn’t easily kill or interface with it. This is a called an orphan process. Singularity instances give you the ability to handle services properly. More on this [here](https://www.sylabs.io/guides/3.0/user-guide/running_services.html).
@@ -160,42 +170,25 @@ singularity exec --nv tf2.sif python
 singularity exec --nv tf2.sif command_to_execute
 ```
 
-To start the jupyter notebook server
-
-```sh
-singularity run --nv --bind /your/project:/jupyter --app jupyter tensorflow-1.13.sif
-```
-
-
 To run `jupyter notebook` the old-school way (without the app):
 
 ```sh
 singularity exec --bind /home/username/.jupyter/tmp:/run/user \
                  --bind /home/username/project_folder:/jupyter \
                  --nv \
-                 tensorflow-1.13.sif \
-                 jupyter notebook \
-                 --notebook-dir=/jupyter \
-                 --no-browser
+                 tf2_jupyter.sif \
+                 jupyter notebook --notebook-dir=/jupyter --no-browser
 ```
-
-To kill the notebook server, run the shell and
-
-```sh
-ps aufx | grep jupyter
-kill <id>
-```
-
 
 ## Notes
 
-- When starting services without instances (i.e, when working directly on the container), remember to bind `--nv` and other directories via `--bind` every single time you access the container directly. This is however only needed to be done during launching and not required when accessed via instance.
-
 - `--nv` flag binds native Nvidia libraries to the container and without this flag you will not be able to access the GPUs from inside the container.
 
-- `Jupyter` app will create a temporary folder at `~/.container/jupyter` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. `/tmp` folder is **not** bound for `jupyter` to write temporary info into, as this will lead to writing to host's `/tmp` folder (if container is launched without `--contain` flag) where other users can read resulting in leaking user specific and sensitive information.
+- If container is launched without `--contain` flag, `/tmp` folder will be linked to host's `/tmp` folder (where other users have read permissions) resulting in leaking user specific and sensitive information.
 
-- `CONTAINER_RUNTIME_DIR` variable points to where the container puts in all the temporary files which is `~/.container`. This can be used anywhere from inside the container.
+- `Jupyter` app will create a temporary folder at `~/.container/jupyter` (check `CONTAINER_RUNTIME_DIR` env variable in the definition file) or `~/.jupyter` in the host machine (not inside the container!) where notebook tokens and other ephemeral information will be stored. 
+
+- When starting services without instances (i.e, when working directly on the singularity image), remember to bind `--nv` and other directories via `--bind` every single time. Not applicable when running on launched instances.
 
 ## Licence
 
