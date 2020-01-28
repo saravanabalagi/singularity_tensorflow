@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: tensorflow/tensorflow:2.0.0-gpu-py3
+From: tensorflow/tensorflow:2.1.0-gpu-py3
 
 %post
 
@@ -12,7 +12,7 @@ From: tensorflow/tensorflow:2.0.0-gpu-py3
   echo $(which pip)
 
   # Tensorflow addons
-  pip install tensorflow_addons
+  pip install --no-deps tensorflow_addons
 
   # with only pip install opencv will fail on import unable to link libs
   pip install opencv-python
@@ -54,6 +54,6 @@ From: tensorflow/tensorflow:2.0.0-gpu-py3
 
 %help
 
-  This is a Tensorflow 2.0.0 container with gpu support and additional useful
+  This is a Tensorflow 2 container with gpu support and additional useful
   pip packages. For more details, see the repo at
   https://github.com/saravanabalagi/singularity_tensorflow
