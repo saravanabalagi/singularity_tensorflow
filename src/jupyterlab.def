@@ -13,9 +13,12 @@ From: tf2.sif
   # additional notebook extensions
   pip install jupyter_contrib_nbextensions
 
+  # install git
+  apt update && apt -y install git
+
   # install node
-  curl -sL https://deb.nodesource.com/setup_11.x  | bash -
-  apt-get -y install nodejs
+  curl -sL https://deb.nodesource.com/setup_12.x  | bash -
+  apt -y install nodejs
 
   # install yarn
   curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
