@@ -6,6 +6,9 @@ From: tensorflow/tensorflow:2.1.0-gpu-py3
   # Reset sources to https://us.archive.ubuntu.com for apt install to work
   sed -i 's/http:\/\/archive.ubuntu.com/http:\/\/us.archive.ubuntu.com/' /etc/apt/sources.list
 
+  # install git
+  apt update && apt -y install git
+
   # Upgrade pip first
   pip install --upgrade pip
   echo $(python --version)
