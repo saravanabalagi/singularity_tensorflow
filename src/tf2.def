@@ -48,13 +48,14 @@ From: tensorflow/tensorflow:2.1.0-gpu-py3
 
   # Shell Utils
   apt update && apt install -y tmux
+  apt install -y sysstat
 
 %labels
 
   Author Saravanabalagi Ramachandran
   Email saravanabalagi@hotmail.com
   Repo https://github.com/saravanabalagi/singularity_tensorflow
-  Version v0.2
+  Version v0.3
 
 %help
 
