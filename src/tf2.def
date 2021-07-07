@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: tensorflow/tensorflow:2.1.0-gpu-py3
+From: tensorflow/tensorflow:2.2.0-gpu
 
 %post
 
@@ -19,8 +19,8 @@ From: tensorflow/tensorflow:2.1.0-gpu-py3
   pip install tensorflow-hub
 
   # with only pip install opencv will fail on import unable to link libs
+  apt update && apt install -y ffmpeg libsm6 libxext6 libxrender-dev
   pip install opencv-python
-  apt update && apt install -y libsm6 libxext6 libxrender-dev
 
   # Computer Vision
   pip install sklearn scikit-image
@@ -31,6 +31,7 @@ From: tensorflow/tensorflow:2.1.0-gpu-py3
   apt update && apt install -y graphviz
   pip install pydot
   pip install seaborn
+  pip install -U tensorboard_plugin_profile
 
   # Data Processing
   pip install pandas
@@ -49,6 +50,13 @@ From: tensorflow/tensorflow:2.1.0-gpu-py3
   # Shell Utils
   apt update && apt install -y tmux
   apt install -y sysstat
+
+  # Install pid_usage
+  apt install wget
+  wget https://github.com/saravanabalagi/pid_usage/releases/download/0.1/pid_usage.tar.gz
+  tar -xzf pid_usage.tar.gz
+  mv pid_usage /bin
+  rm pid_usage.tar.gz
 
 %labels
 
